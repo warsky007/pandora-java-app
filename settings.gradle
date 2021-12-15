@@ -1,0 +1,8 @@
+rootProject.name = 'java-apps'
+
+include 'apps:demo',
+    'archive',
+    'frontend'
+include 'test'
+include 'sdk'
+

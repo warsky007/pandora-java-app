@@ -1,0 +1,74 @@
+
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "commons-codec:commons-codec:${versions.commonscodec}"
+    classpath "org.bouncycastle:bcprov-jdk15on:${versions.bouncycastle}"
+    classpath "de.undercouch:gradle-download-task:${versions.undercouch}"
+  }
+}
+
+apply plugin: 'de.undercouch.download'
+
+task copy(type: Copy) {
+  destinationDir file('apps')
+
+  childFiles.each { k,v ->
+    dependsOn ":apps:${k}:assemble"
+
+    into("${k}/bins") {
+      from { project(":apps:${k}").file("build/libs/${k}.jar") }
+    }
+  }
+
+  doFirst {
+    childFiles.each { k, v ->
+      delete file("${k}/bins/${k}.jar")
+    }
+  }
+
+  doLast {
+    childFiles.each { k, v ->
+      file("${k}/logs").mkdirs()
+    }
+  }
+}
+
+task zip(type: Zip) {
+  destinationDirectory.set(file('build/zip'))
+  archiveBaseName.set("java-app-demo-${appVersions.demo}")
+
+  dependsOn copy
+
+  into('java-app-demo') {
+    from { project.file('apps/demo') }
+  }
+
+  doFirst {
+    delete project.file("build/zip/java-app-demo-*.zip")
+  }
+}
+
+task zipApp {
+  childFiles.each { k, v ->
+  }
+}
+
+task tar(type: Tar) {
+  destinationDirectory.set(file('build/tar'))
+  archiveBaseName.set("demo-${appVersions.demo}")
+  archiveExtension.set('tar.gz')
+  compression Compression.GZIP
+
+  dependsOn copy
+
+  into('') {
+    from { project.file('apps/demo') }
+  }
+
+  doFirst {
+    delete project.file("build/tar/demo-0.0.1.tar.gz")
+  }
+}

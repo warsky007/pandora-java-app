@@ -1,0 +1,4 @@
+<nav>
+    <view name="task" label="任务管理" asset="task.xml" />
+    <view name="driver" label="驱动管理" asset="driver.xml" />
+</nav>

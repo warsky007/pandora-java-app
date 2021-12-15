@@ -1,0 +1,6 @@
+{
+  "name": "demo",
+  "env":"java",
+  "filename":"bins/demo.jar",
+  "type":"collector"
+}

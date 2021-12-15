@@ -1,0 +1,34 @@
+
+# intellij files
+.idea/
+*.iml
+*.ipr
+*.iws
+*.tokens
+build-idea/
+
+# eclipse files
+.project
+.classpath
+.settings
+build-eclipse/
+
+# gradle stuff
+.gradle/
+.gradle-cache
+
+# vscode stuff
+/.vscode/
+
+# testing stuff
+**/.local*
+.vagrant/
+/logs/
+
+# osx stuff
+.DS_Store
+
+# build
+build/
+out/
+archive/apps/*/bins/*.jar

@@ -1,0 +1,13 @@
+{
+  "name": "java-app-demo",
+  "title": "java-app-demo",
+  "icon": "static/logo.jpg",
+  "description": "demo",
+  "categories": [],
+  "platformVersion": ">=0.13.4",
+  "docsLink": "https://developer.qiniu.com/insight",
+  "preview": [],
+  "scope": "global",
+  "type": "app",
+  "version": "0.0.1"
+}

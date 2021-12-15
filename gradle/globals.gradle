@@ -1,0 +1,65 @@
+import groovy.json.JsonSlurper
+
+Properties libProps = new Properties()
+Properties appProps = new Properties()
+libProps.load(new FileInputStream(project.rootProject.file("gradle/version.properties")))
+appProps.load(new FileInputStream(project.rootProject.file("gradle/appversion.properties")))
+
+ext {
+  versions = libProps
+  appVersions = appProps
+
+  isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+  isMacOsX = org.gradle.internal.os.OperatingSystem.current().isMacOsX()
+  isLinux = org.gradle.internal.os.OperatingSystem.current().isLinux()
+
+  isEclipse = (System.getProperty("eclipse.launcher") != null
+      || System.getProperty("eclipse.application") != null
+      || gradle.startParameter.taskNames.contains('eclipse')
+      || gradle.startParameter.taskNames.contains('cleanEclipse'))
+
+  isIdea = (System.getProperty("idea.active") != null
+      || gradle.startParameter.taskNames.contains('idea')
+      || gradle.startParameter.taskNames.contains('cleanIdea')
+      || gradle.startParameter.taskNames.contains('cleanIdeaBuild'))
+
+  javaprojects = subprojects.findAll { it.file('src/main/java').exists() }
+
+  webprojects = subprojects.findAll { it.file('rush.json').exists() }
+
+  // for archive platform
+  def targetParam = System.properties.getOrDefault('target', 'all')
+  def jsonSlurper = new JsonSlurper()
+  childFiles = new HashMap()
+  if (targetParam.equalsIgnoreCase('all') && project.rootProject.file('archive/apps').exists()) {
+    project.rootProject.file('archive/apps').listFiles().findAll({ it.isDirectory() }).each {
+      def cfg = jsonSlurper.parse(new File("archive/apps/"+it.name+"/app.json"))
+      childFiles.put(it.name, cfg.getAt("name"))
+    }
+  } else {
+    def cfg = jsonSlurper.parse(new File("archive/apps/"+targetParam+"/app.json"))
+    childFiles.put(it.name, cfg.getAt("name"))
+  }
+}
+
+allprojects {
+  group 'io.qiniu'
+}
+
+configure(javaprojects) {
+  apply plugin: 'java-library'
+  apply plugin: 'maven-publish'
+
+  publishing {
+    publications {
+      nebula(MavenPublication) {
+        artifactId project.archivesBaseName
+        from components.java
+      }
+    }
+
+    repositories {
+      mavenLocal()
+    }
+  }
+}
